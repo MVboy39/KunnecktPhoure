@@ -9,11 +9,19 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+/**
+ * the panel the game is held in
+ *
+ * @author Steve Hocktail
+ */
 public class K4Panel extends JPanel {
 	private byte[][] coins; // 0 is empty, 1 is black, 2 is red
 	private boolean turn; // true is black, false is red
 	private JButton[] buttons;
 
+	/**
+	 * constructs the panel the game is in
+	 */
 	public K4Panel() {
 		this.setLayout(null);
 		this.coins = new byte[7][6];
@@ -124,9 +132,19 @@ public class K4Panel extends JPanel {
 		}
 	}
 
+	/**
+	 * listener for the buttons that drop coins
+	 *
+	 * @author Steve Hocktail
+	 */
 	private class TheListener implements ActionListener {
 		private byte col;
 
+		/**
+		 * constructs a new listener for dropping coins
+		 *
+		 * @param col the column this listener is for
+		 */
 		public TheListener(byte col) {
 			this.col = col;
 		}
