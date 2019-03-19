@@ -12,7 +12,7 @@ public class KunnecktPhoure {
 		JFrame window = new JFrame("KunnecktPhoure");
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setLayout(null);
-		window.setSize(464, 500);
+		window.setSize(464, 550);
 		window.setResizable(false);
 		window.add(new K4Panel());
 		window.setVisible(true);

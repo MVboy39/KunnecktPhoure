@@ -17,24 +17,38 @@ import javax.swing.JPanel;
 public class K4Panel extends JPanel {
 	private byte[][] coins; // 0 is empty, 1 is black, 2 is red
 	private boolean turn; // true is black, false is red
-	private JButton[] buttons;
 
 	/**
 	 * constructs the panel the game is in
 	 */
 	public K4Panel() {
 		this.setLayout(null);
-		this.coins = new byte[7][6];
-		this.buttons = new JButton[7];
-		this.turn = true;
+		this.startNewGame();
+		JButton[] buttons = new JButton[7];
 		for (byte i = 0; i < 7; i++) {
-			this.buttons[i] = new JButton();
-			this.buttons[i].addActionListener(new K4Panel.TheListener(i));
-			this.buttons[i].setSize(60, 60);
-			this.buttons[i].setLocation(i * 60 + 15, 400);
-			this.add(this.buttons[i]);
+			buttons[i] = new JButton();
+			buttons[i].addActionListener(new K4Panel.TheListener(i));
+			buttons[i].setSize(60, 60);
+			buttons[i].setLocation(i * 60 + 15, 400);
+			this.add(buttons[i]);
 		}
-		this.setSize(440, 500);
+		JButton newgame = new JButton("new game");
+		newgame.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				K4Panel.this.startNewGame();
+			}
+		});
+		newgame.setSize(120, 30);
+		newgame.setLocation(160, 490);
+		this.add(newgame);
+		this.setSize(440, 550);
+	}
+
+	private void startNewGame() {
+		this.coins = new byte[7][6];
+		this.turn = true;
+		this.repaint();
 	}
 
 	/**
