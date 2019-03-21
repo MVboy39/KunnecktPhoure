@@ -14,9 +14,9 @@ import javax.swing.JPanel;
  *
  * @author Steve Hocktail
  */
-public class K4Panel extends JPanel {
+public class K4Panel extends JPanel implements Runnable {
 	private byte[][] coins; // 0 is empty, 1 is black, 2 is red
-	private boolean turn; // true is black, false is red
+	protected boolean turn; // true is black, false is red
 
 	/**
 	 * constructs the panel the game is in
@@ -45,10 +45,22 @@ public class K4Panel extends JPanel {
 		this.setSize(440, 550);
 	}
 
-	private void startNewGame() {
+	/**
+	 * resets the board and starts a new game
+	 */
+	public void startNewGame() {
 		this.coins = new byte[7][6];
 		this.turn = true;
 		this.repaint();
+	}
+
+	/**
+	 * returns a boolean based on whose turn it is
+	 *
+	 * @return true if black's turn, false if red
+	 */
+	public boolean getTurn() {
+		return this.turn;
 	}
 
 	/**
@@ -57,7 +69,7 @@ public class K4Panel extends JPanel {
 	 * @param col the column to drop in
 	 * @return true if placed, false otherwise
 	 */
-	private boolean placeCoin(byte col) {
+	public boolean placeCoin(byte col) {
 		if (col >= 0 && col <= 6) {
 			for (int i = 5; i >= 0; i--) {
 				if (this.coins[col][i] == 0) {
@@ -70,6 +82,20 @@ public class K4Panel extends JPanel {
 		return false;
 	}
 
+	public void doTurn(byte col) {
+		if (this.placeCoin(col)) {
+			this.repaint();
+			byte win = this.checkForWin();
+			switch (win) {
+			case 1:
+				JOptionPane.showMessageDialog(null, "Black wins");
+				break;
+			case 2:
+				JOptionPane.showMessageDialog(null, "Red wins");
+			}
+		}
+	}
+
 	/**
 	 * checks to see if a piece is in a four-in-a-row
 	 *
@@ -77,7 +103,7 @@ public class K4Panel extends JPanel {
 	 * @param row the row of the piece
 	 * @return 0 if no winner, 1 if black, 2 if red
 	 */
-	private byte checkForWin() {
+	public byte checkForWin() {
 		// check vertical
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -165,17 +191,14 @@ public class K4Panel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (K4Panel.this.placeCoin(this.col)) {
-				K4Panel.this.repaint();
-				byte win = K4Panel.this.checkForWin();
-				switch (win) {
-				case 1:
-					JOptionPane.showMessageDialog(null, "Black wins");
-					break;
-				case 2:
-					JOptionPane.showMessageDialog(null, "Red wins");
-				}
-			}
+			K4Panel.this.doTurn(this.col);
 		}
+	}
+
+	/**
+	 * unused here, for the netplay variants
+	 */
+	@Override
+	public void run() {
 	}
 }
