@@ -16,7 +16,8 @@ import javax.swing.JPanel;
  */
 public class K4Panel extends JPanel implements Runnable {
 	private byte[][] coins; // 0 is empty, 1 is black, 2 is red
-	protected boolean turn; // true is black, false is red
+	private boolean turn; // true is black, false is red
+	private byte last; // -1 if no last turn, otherwise represents where the most recent coin was dropped
 
 	/**
 	 * constructs the panel the game is in
@@ -51,6 +52,7 @@ public class K4Panel extends JPanel implements Runnable {
 	public void startNewGame() {
 		this.coins = new byte[7][6];
 		this.turn = true;
+		this.last = -1;
 		this.repaint();
 	}
 
@@ -69,12 +71,13 @@ public class K4Panel extends JPanel implements Runnable {
 	 * @param col the column to drop in
 	 * @return true if placed, false otherwise
 	 */
-	public boolean placeCoin(byte col) {
+	private boolean placeCoin(byte col) {
 		if (col >= 0 && col <= 6) {
 			for (int i = 5; i >= 0; i--) {
 				if (this.coins[col][i] == 0) {
 					this.coins[col][i] = (byte) (this.turn ? 1 : 2);
 					this.turn = !this.turn;
+					this.last = (byte) (col * 6 + i);
 					return true;
 				}
 			}
@@ -103,10 +106,12 @@ public class K4Panel extends JPanel implements Runnable {
 	 * @param row the row of the piece
 	 * @return 0 if no winner, 1 if black, 2 if red
 	 */
-	public byte checkForWin() {
+	private byte checkForWin() {
+		byte i, j;
+
 		// check vertical
-		for (int i = 0; i < 7; i++) {
-			for (int j = 0; j < 3; j++) {
+		for (i = 0; i < 7; i++) {
+			for (j = 0; j < 3; j++) {
 				if (this.coins[i][j] != 0 && this.coins[i][j] == this.coins[i][j + 1]
 						&& this.coins[i][j] == this.coins[i][j + 2] && this.coins[i][j] == this.coins[i][j + 3]) {
 					return this.coins[i][j];
@@ -115,8 +120,8 @@ public class K4Panel extends JPanel implements Runnable {
 		}
 
 		// check horizontal
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 6; j++) {
+		for (i = 0; i < 4; i++) {
+			for (j = 0; j < 6; j++) {
 				if (this.coins[i][j] != 0 && this.coins[i][j] == this.coins[i + 1][j]
 						&& this.coins[i][j] == this.coins[i + 2][j] && this.coins[i][j] == this.coins[i + 3][j]) {
 					return this.coins[i][j];
@@ -125,8 +130,8 @@ public class K4Panel extends JPanel implements Runnable {
 		}
 
 		// check diagonal down-right
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 3; j++) {
+		for (i = 0; i < 4; i++) {
+			for (j = 0; j < 3; j++) {
 				if (this.coins[i][j] != 0 && this.coins[i][j] == this.coins[i + 1][j + 1]
 						&& this.coins[i][j] == this.coins[i + 2][j + 2]
 						&& this.coins[i][j] == this.coins[i + 3][j + 3]) {
@@ -136,8 +141,8 @@ public class K4Panel extends JPanel implements Runnable {
 		}
 
 		// check diagonal down-left
-		for (int i = 3; i < 7; i++) {
-			for (int j = 0; j < 3; j++) {
+		for (i = 3; i < 7; i++) {
+			for (j = 0; j < 3; j++) {
 				if (this.coins[i][j] != 0 && this.coins[i][j] == this.coins[i - 1][j + 1]
 						&& this.coins[i][j] == this.coins[i - 2][j + 2]
 						&& this.coins[i][j] == this.coins[i - 3][j + 3]) {
@@ -153,10 +158,11 @@ public class K4Panel extends JPanel implements Runnable {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		for (int i = 0; i < 7; i++) {
-			for (int j = 0; j < 6; j++) {
+		byte spot = 0;
+		for (byte i = 0; i < 7; i++) {
+			for (byte j = 0; j < 6; j++) {
 				// draw box
-				g.setColor(Color.GRAY);
+				g.setColor(this.last == spot ? Color.YELLOW : Color.GRAY); // highlight the last turn
 				g.fillRect(i * 60 + 15, j * 60 + 10, 60, 60);
 				g.setColor(Color.BLACK);
 				g.drawRect(i * 60 + 15, j * 60 + 10, 60, 60);
@@ -168,6 +174,7 @@ public class K4Panel extends JPanel implements Runnable {
 				case 1:
 					g.fillOval(i * 60 + 20, j * 60 + 15, 50, 50);
 				}
+				spot++;
 			}
 		}
 	}
