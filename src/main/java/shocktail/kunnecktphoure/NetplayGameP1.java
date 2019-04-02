@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 import javax.swing.JOptionPane;
 
@@ -17,7 +18,15 @@ public class NetplayGameP1 extends K4Panel {
 
 	public NetplayGameP1(int localport) throws IOException {
 		ServerSocket serversocket = new ServerSocket(localport);
-		this.socket = serversocket.accept();
+		serversocket.setSoTimeout(60000);
+		try {
+			this.socket = serversocket.accept();
+		} catch (SocketTimeoutException ex) {
+			JOptionPane.showMessageDialog(null, "No one joined.");
+			serversocket.close();
+			this.finalize();
+			System.exit(0);
+		}
 		serversocket.close();
 		this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 		this.out = new PrintWriter(this.socket.getOutputStream(), true);
@@ -41,9 +50,11 @@ public class NetplayGameP1 extends K4Panel {
 			}
 		} catch (SocketException ex) {
 			JOptionPane.showMessageDialog(null, "The opponent closed the game.");
+			this.finalize();
 			System.exit(0);
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			this.finalize();
 			System.exit(1);
 		}
 	}
