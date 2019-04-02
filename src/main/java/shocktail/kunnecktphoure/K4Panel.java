@@ -25,24 +25,24 @@ public class K4Panel extends JPanel implements Runnable {
 	public K4Panel() {
 		this.setLayout(null);
 		this.startNewGame();
-		JButton[] buttons = new JButton[7];
+		JButton button;
 		for (byte i = 0; i < 7; i++) {
-			buttons[i] = new JButton();
-			buttons[i].addActionListener(new K4Panel.TheListener(i));
-			buttons[i].setSize(60, 60);
-			buttons[i].setLocation(i * 60 + 15, 400);
-			this.add(buttons[i]);
+			button = new JButton();
+			button.addActionListener(new K4Panel.TheListener(i));
+			button.setSize(60, 60);
+			button.setLocation(i * 60 + 15, 400);
+			this.add(button);
 		}
-		JButton newgame = new JButton("new game");
-		newgame.addActionListener(new ActionListener() {
+		button = new JButton("new game");
+		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				K4Panel.this.startNewGame();
 			}
 		});
-		newgame.setSize(120, 30);
-		newgame.setLocation(160, 490);
-		this.add(newgame);
+		button.setSize(120, 30);
+		button.setLocation(160, 490);
+		this.add(button);
 		this.setSize(440, 550);
 	}
 
