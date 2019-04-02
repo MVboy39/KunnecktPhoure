@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
+
+import javax.swing.JOptionPane;
 
 public class NetplayGameP2 extends K4Panel {
 	private Socket socket;
@@ -22,20 +25,23 @@ public class NetplayGameP2 extends K4Panel {
 	public void run() {
 		String s;
 		int c;
-		while (true) {
-			if (this.getTurn()) {
-				try {
+		try {
+			while (true) {
+				if (this.getTurn()) {
 					if ((s = this.in.readLine()) != null) {
 						c = Integer.parseInt(s);
 						if (c >= 0 && c <= 6)
 							super.doTurn((byte) c);
 					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
-					System.exit(1);
 				}
+				Thread.sleep(100);
 			}
-			System.out.print(""); // for some reason it didn't work without printing something
+		} catch (SocketException ex) {
+			JOptionPane.showMessageDialog(null, "The opponent closed the game.");
+			System.exit(0);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			System.exit(1);
 		}
 	}
 

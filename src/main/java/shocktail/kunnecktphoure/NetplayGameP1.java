@@ -6,16 +6,19 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+
+import javax.swing.JOptionPane;
 
 public class NetplayGameP1 extends K4Panel {
 	private Socket socket;
-	private ServerSocket serversocket;
 	private BufferedReader in;
 	private PrintWriter out;
 
 	public NetplayGameP1(int localport) throws IOException {
-		this.serversocket = new ServerSocket(localport);
-		this.socket = this.serversocket.accept();
+		ServerSocket serversocket = new ServerSocket(localport);
+		this.socket = serversocket.accept();
+		serversocket.close();
 		this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 		this.out = new PrintWriter(this.socket.getOutputStream(), true);
 	}
@@ -24,20 +27,24 @@ public class NetplayGameP1 extends K4Panel {
 	public void run() {
 		String s;
 		int c;
-		while (true) {
-			if (!this.getTurn()) {
-				try {
+		try {
+			while (true) {
+				if (!this.getTurn()) {
 					if ((s = this.in.readLine()) != null) {
 						c = Integer.parseInt(s);
 						if (c >= 0 && c <= 6)
 							super.doTurn((byte) c);
 					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
-					System.exit(1);
+
 				}
+				Thread.sleep(100);
 			}
-			System.out.print(""); // for some reason it didn't work without printing something
+		} catch (SocketException ex) {
+			JOptionPane.showMessageDialog(null, "The opponent closed the game.");
+			System.exit(0);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			System.exit(1);
 		}
 	}
 
@@ -61,10 +68,6 @@ public class NetplayGameP1 extends K4Panel {
 		}
 		try {
 			this.socket.close();
-		} catch (Exception ex) {
-		}
-		try {
-			this.serversocket.close();
 		} catch (Exception ex) {
 		}
 	}
