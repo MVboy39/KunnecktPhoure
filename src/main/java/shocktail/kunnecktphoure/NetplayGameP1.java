@@ -24,7 +24,7 @@ public class NetplayGameP1 extends K4Panel {
 		} catch (SocketTimeoutException ex) {
 			JOptionPane.showMessageDialog(null, "No one joined.");
 			serversocket.close();
-			this.finalize();
+			this.cleanup();
 			System.exit(0);
 		}
 		serversocket.close();
@@ -50,11 +50,11 @@ public class NetplayGameP1 extends K4Panel {
 			}
 		} catch (SocketException ex) {
 			JOptionPane.showMessageDialog(null, "The opponent closed the game.");
-			this.finalize();
+			this.cleanup();
 			System.exit(0);
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			this.finalize();
+			this.cleanup();
 			System.exit(1);
 		}
 	}
@@ -68,7 +68,7 @@ public class NetplayGameP1 extends K4Panel {
 	}
 
 	@Override
-	protected void finalize() {
+	public void cleanup() {
 		try {
 			this.in.close();
 		} catch (Exception ex) {

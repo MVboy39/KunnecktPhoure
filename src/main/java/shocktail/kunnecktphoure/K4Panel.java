@@ -187,6 +187,13 @@ public class K4Panel extends JPanel implements Runnable {
 	}
 
 	/**
+	 * so apparently finalize was deprecated this whole time, so instead this will
+	 * be used to close the streams in the netplay variants. unused here, though.
+	 */
+	public void cleanup() {
+	}
+
+	/**
 	 * listener for the buttons that drop coins
 	 *
 	 * @author Steve Hocktail

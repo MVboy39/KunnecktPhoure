@@ -22,7 +22,7 @@ public class NetplayGameP2 extends K4Panel {
 		} catch (ConnectException ex) {
 			JOptionPane.showMessageDialog(null,
 					"Connection refused.  Make sure the host's game is already running and the host has an open port.");
-			this.finalize();
+			this.cleanup();
 			System.exit(0);
 		}
 		this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
@@ -46,11 +46,11 @@ public class NetplayGameP2 extends K4Panel {
 			}
 		} catch (SocketException ex) {
 			JOptionPane.showMessageDialog(null, "The opponent closed the game.");
-			this.finalize();
+			this.cleanup();
 			System.exit(0);
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			this.finalize();
+			this.cleanup();
 			System.exit(1);
 		}
 	}
@@ -64,7 +64,7 @@ public class NetplayGameP2 extends K4Panel {
 	}
 
 	@Override
-	protected void finalize() {
+	public void cleanup() {
 		try {
 			this.in.close();
 		} catch (Exception ex) {
