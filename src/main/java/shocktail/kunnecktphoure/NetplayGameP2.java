@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -16,7 +17,14 @@ public class NetplayGameP2 extends K4Panel {
 	private PrintWriter out;
 
 	public NetplayGameP2(InetAddress address, int port) throws IOException {
-		this.socket = new Socket(address, port);
+		try {
+			this.socket = new Socket(address, port);
+		} catch (ConnectException ex) {
+			JOptionPane.showMessageDialog(null,
+					"Connection refused.  Make sure the host's game is already running and the host has an open port.");
+			this.finalize();
+			System.exit(0);
+		}
 		this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 		this.out = new PrintWriter(this.socket.getOutputStream(), true);
 	}
@@ -38,9 +46,11 @@ public class NetplayGameP2 extends K4Panel {
 			}
 		} catch (SocketException ex) {
 			JOptionPane.showMessageDialog(null, "The opponent closed the game.");
+			this.finalize();
 			System.exit(0);
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			this.finalize();
 			System.exit(1);
 		}
 	}
