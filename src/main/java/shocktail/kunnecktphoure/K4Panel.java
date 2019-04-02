@@ -180,6 +180,13 @@ public class K4Panel extends JPanel implements Runnable {
 	}
 
 	/**
+	 * unused here, for the netplay variants
+	 */
+	@Override
+	public void run() {
+	}
+
+	/**
 	 * listener for the buttons that drop coins
 	 *
 	 * @author Steve Hocktail
@@ -200,12 +207,5 @@ public class K4Panel extends JPanel implements Runnable {
 		public void actionPerformed(ActionEvent e) {
 			K4Panel.this.doTurn(this.col);
 		}
-	}
-
-	/**
-	 * unused here, for the netplay variants
-	 */
-	@Override
-	public void run() {
 	}
 }
