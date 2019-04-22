@@ -109,8 +109,8 @@ public class K4Panel extends JPanel implements Runnable {
 	/**
 	 * checks to see if a piece is in a four-in-a-row
 	 *
-	 * @param col the column of the piece
-	 * @param row the row of the piece
+	 * @param x the column of the piece
+	 * @param y the row of the piece
 	 * @return 0 if no winner, 1 if black, 2 if red
 	 */
 	private byte checkForWin(byte x, byte y) {
