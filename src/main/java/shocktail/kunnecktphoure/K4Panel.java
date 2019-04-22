@@ -17,13 +17,15 @@ import javax.swing.JPanel;
 public class K4Panel extends JPanel implements Runnable {
 	private byte[][] coins; // 0 is empty, 1 is black, 2 is red
 	private boolean turn; // true is black, false is red
-	private byte last; // -1 if no last turn, otherwise represents where the most recent coin was dropped
+	private byte last; // -1 if no last turn, otherwise represents where the most recent coin was
+						// dropped
 
 	/**
 	 * constructs the panel the game is in
 	 */
 	public K4Panel() {
 		this.setLayout(null);
+		this.coins = new byte[7][6];
 		this.startNewGame();
 		JButton button;
 		for (byte i = 0; i < 7; i++) {
@@ -50,7 +52,11 @@ public class K4Panel extends JPanel implements Runnable {
 	 * resets the board and starts a new game
 	 */
 	public void startNewGame() {
-		this.coins = new byte[7][6];
+		for (byte i = 0; i < 7; i++) {
+			for (byte j = 0; j < 6; j++) {
+				this.coins[i][j] = 0;
+			}
+		}
 		this.turn = true;
 		this.last = -1;
 		this.repaint();
@@ -69,26 +75,27 @@ public class K4Panel extends JPanel implements Runnable {
 	 * attempts to drop a coin on the board, then switches turn if it works
 	 *
 	 * @param col the column to drop in
-	 * @return true if placed, false otherwise
+	 * @return the row the coin is placed in, or -1 if it couldn't be placed
 	 */
-	private boolean placeCoin(byte col) {
+	private byte placeCoin(byte col) {
 		if (col >= 0 && col <= 6) {
-			for (int i = 5; i >= 0; i--) {
+			for (byte i = 5; i >= 0; i--) {
 				if (this.coins[col][i] == 0) {
 					this.coins[col][i] = (byte) (this.turn ? 1 : 2);
 					this.turn = !this.turn;
 					this.last = (byte) (col * 6 + i);
-					return true;
+					return i;
 				}
 			}
 		}
-		return false;
+		return -1;
 	}
 
 	public void doTurn(byte col) {
-		if (this.placeCoin(col)) {
+		byte row = this.placeCoin(col);
+		if (row >= 0) {
 			this.repaint();
-			byte win = this.checkForWin();
+			byte win = this.checkForWin(col, row);
 			switch (win) {
 			case 1:
 				JOptionPane.showMessageDialog(null, "Black wins");
@@ -106,52 +113,40 @@ public class K4Panel extends JPanel implements Runnable {
 	 * @param row the row of the piece
 	 * @return 0 if no winner, 1 if black, 2 if red
 	 */
-	private byte checkForWin() {
-		byte i, j;
+	private byte checkForWin(byte x, byte y) {
+		if (this.coins[x][y] != 0) {
+			for (int i = -3; i <= 0; i++) {
+				// check horizontal
+				if (x + i >= 0 && x + i <= 3 && this.coins[x + i][y] == this.coins[x + i + 1][y]
+						&& this.coins[x + i][y] == this.coins[x + i + 2][y]
+						&& this.coins[x + i][y] == this.coins[x + i + 3][y]) {
+					return this.coins[x][y];
+				}
 
-		// check vertical
-		for (i = 0; i < 7; i++) {
-			for (j = 0; j < 3; j++) {
-				if (this.coins[i][j] != 0 && this.coins[i][j] == this.coins[i][j + 1]
-						&& this.coins[i][j] == this.coins[i][j + 2] && this.coins[i][j] == this.coins[i][j + 3]) {
-					return this.coins[i][j];
+				// check vertical
+				if (y + i >= 0 && y + i <= 2 && this.coins[x][y + i] == this.coins[x][y + i + 1]
+						&& this.coins[x][y + i] == this.coins[x][y + i + 2]
+						&& this.coins[x][y + i] == this.coins[x][y + i + 3]) {
+					return this.coins[x][y];
+				}
+
+				// check diagonal down-right
+				if (x + i >= 0 && x + i <= 3 && y + i >= 0 && y + i <= 2
+						&& this.coins[x + i][y + i] == this.coins[x + i + 1][y + i + 1]
+						&& this.coins[x + i][y + i] == this.coins[x + i + 2][y + i + 2]
+						&& this.coins[x + i][y + i] == this.coins[x + i + 3][y + i + 3]) {
+					return this.coins[x][y];
+				}
+
+				// check diagonal down-left
+				if (x - i >= 3 && x - i <= 6 && y + i >= 0 && y + i <= 2
+						&& this.coins[x - i][y + i] == this.coins[x - i - 1][y + i + 1]
+						&& this.coins[x - i][y + i] == this.coins[x - i - 2][y + i + 2]
+						&& this.coins[x - i][y + i] == this.coins[x - i - 3][y + i + 3]) {
+					return this.coins[x][y];
 				}
 			}
 		}
-
-		// check horizontal
-		for (i = 0; i < 4; i++) {
-			for (j = 0; j < 6; j++) {
-				if (this.coins[i][j] != 0 && this.coins[i][j] == this.coins[i + 1][j]
-						&& this.coins[i][j] == this.coins[i + 2][j] && this.coins[i][j] == this.coins[i + 3][j]) {
-					return this.coins[i][j];
-				}
-			}
-		}
-
-		// check diagonal down-right
-		for (i = 0; i < 4; i++) {
-			for (j = 0; j < 3; j++) {
-				if (this.coins[i][j] != 0 && this.coins[i][j] == this.coins[i + 1][j + 1]
-						&& this.coins[i][j] == this.coins[i + 2][j + 2]
-						&& this.coins[i][j] == this.coins[i + 3][j + 3]) {
-					return this.coins[i][j];
-				}
-			}
-		}
-
-		// check diagonal down-left
-		for (i = 3; i < 7; i++) {
-			for (j = 0; j < 3; j++) {
-				if (this.coins[i][j] != 0 && this.coins[i][j] == this.coins[i - 1][j + 1]
-						&& this.coins[i][j] == this.coins[i - 2][j + 2]
-						&& this.coins[i][j] == this.coins[i - 3][j + 3]) {
-					return this.coins[i][j];
-				}
-			}
-		}
-
-		// nothing found
 		return 0;
 	}
 
