@@ -81,8 +81,8 @@ public class K4Panel extends JPanel implements Runnable {
 		byte a = this.placeCoin(col);
 		if (a >= 0) { // if it placed successfully
 			this.repaint();
-			a = this.checkForWin(col, a);
-			switch (a) {
+
+			switch (this.checkForWin(col, a)) {
 			case 0:
 				if (this.boardIsFull()) {
 					JOptionPane.showMessageDialog(null, "It is a draw");
@@ -96,8 +96,8 @@ public class K4Panel extends JPanel implements Runnable {
 			case 2:
 				JOptionPane.showMessageDialog(null, "Red wins");
 				a = -1;
-				break;
 			}
+
 			if (a == -1) { // if the game is over
 				if (JOptionPane.showConfirmDialog(null, "new game?", "KunnecktPhoure",
 						JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
