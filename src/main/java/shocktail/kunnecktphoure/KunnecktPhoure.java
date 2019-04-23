@@ -19,11 +19,12 @@ public class KunnecktPhoure {
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
 		Object o = JOptionPane.showInputDialog(null, "local or online?", "kunneckt phoure", JOptionPane.DEFAULT_OPTION,
-				null, new String[] { "local", "host", "join" }, "0");
+				null, new String[] { "local", "host", "join", "exit" }, "0");
 		if ("local".equals(o)) {
 			KunnecktPhoure.panel = new K4Panel();
 		} else if ("host".equals(o)) {
-			KunnecktPhoure.panel = new NetplayGameP1(Integer.parseInt(JOptionPane.showInputDialog("port to listen on")));
+			KunnecktPhoure.panel = new NetplayGameP1(
+					Integer.parseInt(JOptionPane.showInputDialog("port to listen on")));
 		} else if ("join".equals(o)) {
 			String s = JOptionPane.showInputDialog("ip:port");
 			KunnecktPhoure.panel = new NetplayGameP2(InetAddress.getByName(s.substring(0, s.indexOf(":"))),
@@ -40,8 +41,9 @@ public class KunnecktPhoure {
 		window.setVisible(true);
 		window.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing(WindowEvent arg0) {
+			public void windowClosing(WindowEvent e) {
 				KunnecktPhoure.panel.cleanup();
+				e.getWindow().dispose();
 				System.exit(0);
 			}
 		});
