@@ -72,6 +72,45 @@ public class K4Panel extends JPanel implements Runnable {
 	}
 
 	/**
+	 * goes through a whole turn of the game. places the coin, then checks if the
+	 * game is over, then asks to start a new game if the game is over
+	 *
+	 * @param col the column to place the coin in
+	 */
+	public void doTurn(byte col) {
+		byte a = this.placeCoin(col);
+		if (a >= 0) { // if it placed successfully
+			this.repaint();
+			a = this.checkForWin(col, a);
+			switch (a) {
+			case 0:
+				if (this.boardIsFull()) {
+					JOptionPane.showMessageDialog(null, "It is a draw");
+					a = -1;
+				}
+				break;
+			case 1:
+				JOptionPane.showMessageDialog(null, "Black wins");
+				a = -1;
+				break;
+			case 2:
+				JOptionPane.showMessageDialog(null, "Red wins");
+				a = -1;
+				break;
+			}
+			if (a == -1) { // if the game is over
+				if (JOptionPane.showConfirmDialog(null, "new game?", "KunnecktPhoure",
+						JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+					this.startNewGame();
+				} else {
+					this.cleanup();
+					System.exit(0);
+				}
+			}
+		}
+	}
+
+	/**
 	 * attempts to drop a coin on the board, then switches turn if it works
 	 *
 	 * @param col the column to drop in
@@ -89,21 +128,6 @@ public class K4Panel extends JPanel implements Runnable {
 			}
 		}
 		return -1;
-	}
-
-	public void doTurn(byte col) {
-		byte row = this.placeCoin(col);
-		if (row >= 0) {
-			this.repaint();
-			byte win = this.checkForWin(col, row);
-			switch (win) {
-			case 1:
-				JOptionPane.showMessageDialog(null, "Black wins");
-				break;
-			case 2:
-				JOptionPane.showMessageDialog(null, "Red wins");
-			}
-		}
 	}
 
 	/**
@@ -148,6 +172,20 @@ public class K4Panel extends JPanel implements Runnable {
 			}
 		}
 		return 0;
+	}
+
+	/**
+	 * checks to see if the board is full
+	 *
+	 * @return true if the entire top row is filled, false otherwise
+	 */
+	private boolean boardIsFull() {
+		for (int i = 0; i <= 6; i++) {
+			if (this.coins[i][0] == 0) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
