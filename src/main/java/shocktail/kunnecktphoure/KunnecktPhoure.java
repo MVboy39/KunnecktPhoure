@@ -23,12 +23,22 @@ public class KunnecktPhoure {
 		if ("local".equals(o)) {
 			KunnecktPhoure.panel = new K4Panel();
 		} else if ("host".equals(o)) {
-			KunnecktPhoure.panel = new NetplayGameP1(
-					Integer.parseInt(JOptionPane.showInputDialog("port to listen on")));
+				try {
+					KunnecktPhoure.panel = new NetplayGameP1(
+							Integer.parseInt(JOptionPane.showInputDialog("port to listen on")));
+				} catch (NumberFormatException ex) {
+					JOptionPane.showMessageDialog(null, "bad input, exiting");
+					System.exit(0);
+				}
 		} else if ("join".equals(o)) {
 			String s = JOptionPane.showInputDialog("ip:port");
-			KunnecktPhoure.panel = new NetplayGameP2(InetAddress.getByName(s.substring(0, s.indexOf(":"))),
-					Integer.parseInt(s.substring(s.indexOf(":") + 1)));
+			try {
+				KunnecktPhoure.panel = new NetplayGameP2(InetAddress.getByName(s.substring(0, s.indexOf(":"))),
+						Integer.parseInt(s.substring(s.indexOf(":") + 1)));
+			} catch (NumberFormatException ex) {
+				JOptionPane.showMessageDialog(null, "bad input, exiting");
+				System.exit(0);
+			}
 		} else {
 			return;
 		}
